@@ -86,7 +86,7 @@ public class GestoreTokenServiceImpl implements GestoreTokenService {
 
     @Override
     public Utente getUtente(String token){
-        return uRepo.findByEmail(getUsername(token))
+        return uRepo.findByEmailAndIsCancellatoFalse(getUsername(token))
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 }

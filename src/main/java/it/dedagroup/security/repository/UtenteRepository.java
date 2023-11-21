@@ -10,12 +10,11 @@ import java.util.Optional;
 
 public interface UtenteRepository extends JpaRepository<Utente, Long>{
 	
-	public Optional<Utente> findByEmailAndPassword(String email, String password);
-	public Optional<Utente> findByTelefono(String telefono);
-	public Optional<Utente> findByDataDiNascita(LocalDate dataDiNascita);
-	public Optional<Utente> findByNomeAndCognome(String nome, String cognome);
-	public Optional<Utente> findByRuolo(Ruolo ruolo);
-	public Optional<Utente> findByNomeAndCognomeAndIsCancellatoTrue(String nome, String cognome);
-	public Optional<Utente> findByEmail(String email);
+	public Optional<Utente> findByEmailAndPasswordAndIsCancellatoFalse(String email, String password);
+	public Optional<Utente> findByTelefonoAndIsCancellatoFalse(String telefono);
+	public Optional<Utente> findByDataDiNascitaAndIsCancellatoFalse(LocalDate dataDiNascita);
+	public Optional<Utente> findByNomeAndCognomeAndIsCancellatoFalse(String nome, String cognome);
+	public Optional<Utente> findByRuoloAndIsCancellatoFalse(Ruolo ruolo);
+	public Optional<Utente> findByEmailAndIsCancellatoFalse(String email);
 
 }

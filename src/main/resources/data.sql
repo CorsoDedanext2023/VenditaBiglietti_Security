@@ -1,0 +1,7 @@
+insert into utente(nome, cognome, data_di_nascita, ruolo, email, password, telefono, is_cancellato) values ('Paolo', 'Pacello', '2000-01-03', 3, 'pacello@gmail.com', 'pacPaolo98_!!', '3487651244', false);
+insert into utente(nome, cognome, data_di_nascita, ruolo, email, password, telefono, is_cancellato) values ('Luca', 'Neri', '2000-11-23', 3, 'neri@gmail.com', 'neriLuca2311__!', '3468761091', false);
+insert into utente(nome, cognome, data_di_nascita, ruolo, email, password, telefono, is_cancellato) values ('Maria', 'Azzaro', '1999-08-08', 3, 'azzaro@gmail.com', 'azzaroMa99_!', '3454674674', false);
+insert into utente(nome, cognome, data_di_nascita, ruolo, email, password, telefono, is_cancellato) values ('Mauro', 'Lani', '1998-09-07', 0, 'mLani@gmail.com', 'mLan0716!!_', '3431219061', false);
+insert into utente(nome, cognome, data_di_nascita, ruolo, email, password, telefono, is_cancellato) values ('Matteo', 'Rossi', '2001-10-05', 1, 'rossiMat@gmail.com', 'rosMat11_!!', '3429012666', false);
+insert into utente(nome, cognome, data_di_nascita, ruolo, email, password, telefono, is_cancellato) values ('Giulia', 'Verdi', '2002-03-10', 0, 'verGiu@gmail.com', 'verdi876_!!', '3440091000', false);
+insert into utente(nome, cognome, data_di_nascita, ruolo, email, password, telefono, is_cancellato) values ('Simona', 'Ventura', '2004-02-12', 2, 'VenSim@gmail.com', 'venSi123_!!', '3486610909', false);

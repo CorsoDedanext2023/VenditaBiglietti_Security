@@ -1,18 +1,18 @@
 package it.dedagroup.security.service.imp;
 
-import it.dedagroup.security.model.Ruolo;
-import it.dedagroup.security.model.Utente;
-import it.dedagroup.security.repository.UtenteRepository;
-import it.dedagroup.security.service.def.UtenteService;
-import jakarta.transaction.Transactional;
+import java.time.LocalDate;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
-import java.util.List;
+import it.dedagroup.security.model.Ruolo;
+import it.dedagroup.security.model.Utente;
+import it.dedagroup.security.repository.UtenteRepository;
+import it.dedagroup.security.service.def.UtenteService;
+import jakarta.transaction.Transactional;
 
 @Service
 public class UtenteServiceImpl implements UtenteService {
@@ -51,20 +51,23 @@ public class UtenteServiceImpl implements UtenteService {
     }
 
     @Override
-    @Transactional(rollbackOn = DataAccessException.class)
-    public void aggiungiUtente(Utente utente) {
-        List<Utente> utenti = repo.findAll().stream().filter(u-> !u.isCancellato()).toList();
-        for(Utente u : utenti){
-            if(u.getEmail().equalsIgnoreCase(utente.getEmail())){
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Email già presente in db.");
-            }
-            if(u.getTelefono().equals(utente.getTelefono())){
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Telefono già presente in db.");
-            }
-        }
-        repo.save(utente);
-
-    }
+	@Transactional(rollbackOn = DataAccessException.class)
+	public Utente aggiungiUtente(Utente utente){
+		Utente utenteByEmail = repo.findByEmailAndIsCancellatoFalse(utente.getEmail()).orElse(null);
+		if(utenteByEmail != null){
+	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Utente con questa email già esistente");
+		}
+		Utente utenteByTelefono = repo.findByTelefonoAndIsCancellatoFalse(utente.getTelefono()).orElse(null);
+		if(utenteByTelefono != null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Utente con questo numero di telefono già esistente");
+		}
+		if(utente.getRuolo()== Ruolo.ADMIN || utente.getRuolo()== Ruolo.SUPER_ADMIN) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Impossibile creare utente con ruolo Admin o SuperAdmin");
+		}
+		repo.save(utente);
+		return utente;
+		
+	}
 
     @Override
     @Transactional(rollbackOn = DataAccessException.class)

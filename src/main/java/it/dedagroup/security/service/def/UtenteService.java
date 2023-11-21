@@ -15,7 +15,7 @@ public interface UtenteService {
     Utente findByDataDiNascita(LocalDate dataDiNascita);
     Utente findByNomeAndCognome(String nome, String cognome);
     Utente findByRuolo(Ruolo ruolo);
-    void aggiungiUtente(Utente utente);
+    Utente aggiungiUtente(Utente utente);
     Utente modificaUtente(Utente utente);
     Utente eliminaUtente(long id);
 }

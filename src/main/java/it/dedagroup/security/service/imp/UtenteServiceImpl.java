@@ -1,6 +1,7 @@
 package it.dedagroup.security.service.imp;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -27,7 +28,7 @@ public class UtenteServiceImpl implements UtenteService {
 
     @Override
     public Utente findByEmail(String email) {
-        return repo.findByEmailAndIsCancellatoFalse(email).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return repo.findByEmailAndIsCancellatoFalse(email).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun utente con email " + email));
     }
 
     @Override
@@ -82,6 +83,16 @@ public class UtenteServiceImpl implements UtenteService {
         if(u.isCancellato()) throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Utente già cancellato.");
         u.setCancellato(true);
         return repo.save(u);
+    }
+
+    @Override
+    public Utente findById(long id) {
+        return repo.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun utente con id " + id));
+    }
+
+    @Override
+    public List<Utente> findAllById(List<Long> ids) {
+        return repo.findAllById(ids);
     }
 
 }

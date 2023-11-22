@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.dao.DataAccessException;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface UtenteService {
     Utente login(String email, String password);
@@ -18,4 +19,7 @@ public interface UtenteService {
     Utente aggiungiUtente(Utente utente);
     Utente modificaUtente(Utente utente);
     Utente eliminaUtente(long id);
+
+    Utente findById(long id);
+    List<Utente> findAllById(List<Long>ids);
 }

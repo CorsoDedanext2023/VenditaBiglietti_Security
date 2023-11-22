@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/utente")
@@ -84,6 +85,16 @@ public class SecurityController {
     public ResponseEntity<Utente> findByRuolo(@RequestParam Ruolo ruolo){
         Utente u=service.findByRuolo(ruolo);
         return ResponseEntity.status(HttpStatus.OK).body(u);
+    }
+
+    @PostMapping("/trovaPerId/{id}")
+    public ResponseEntity<Utente> findById(@PathVariable long id){
+        return ResponseEntity.status(HttpStatus.OK).body(service.findById(id));
+    }
+
+    @PostMapping("/trovaPerListaIds")
+    public ResponseEntity<List<Utente>> findAllById(@RequestBody List<Long> ids){
+        return ResponseEntity.status(HttpStatus.OK).body(service.findAllById(ids));
     }
 
 

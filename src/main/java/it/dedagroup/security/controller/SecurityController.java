@@ -97,5 +97,10 @@ public class SecurityController {
         return ResponseEntity.status(HttpStatus.OK).body(service.findAllById(ids));
     }
 
+    @PostMapping("/trovaPerEmailEPassword")
+    public ResponseEntity<Utente> findByEmailAndPassword(@RequestParam String email, @RequestParam String password){
+        return ResponseEntity.status(HttpStatus.OK).body(service.findByEmailAndPasswordAndIsCancellatoFalse(email, password));
+    }
+
 
 }

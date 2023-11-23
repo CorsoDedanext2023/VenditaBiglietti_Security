@@ -23,17 +23,17 @@ public class UtenteServiceImpl implements UtenteService {
 
     @Override
     public Utente login(String email, String password){
-        return repo.findByEmailAndPasswordAndIsCancellatoFalse(email, password).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Nessun utente con queste credenziali."));
+        return repo.findByEmailAndPasswordAndIsCancellatoFalse(email.trim(), password.trim()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Nessun utente con queste credenziali."));
     }
 
     @Override
     public Utente findByEmail(String email) {
-        return repo.findByEmailAndIsCancellatoFalse(email).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun utente con email " + email));
+        return repo.findByEmailAndIsCancellatoFalse(email.trim()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun utente con email " + email));
     }
 
     @Override
     public Utente findByTelefono(String telefono) {
-        return repo.findByTelefonoAndIsCancellatoFalse(telefono).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return repo.findByTelefonoAndIsCancellatoFalse(telefono.trim()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @Override
@@ -43,7 +43,7 @@ public class UtenteServiceImpl implements UtenteService {
 
     @Override
     public Utente findByNomeAndCognome(String nome, String cognome) {
-        return repo.findByNomeAndCognomeAndIsCancellatoFalse(nome, cognome).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return repo.findByNomeAndCognomeAndIsCancellatoFalse(nome.trim(), cognome.trim()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @Override
@@ -94,5 +94,11 @@ public class UtenteServiceImpl implements UtenteService {
     public List<Utente> findAllById(List<Long> ids) {
         return repo.findAllById(ids);
     }
+
+    @Override
+    public Utente findByEmailAndPasswordAndIsCancellatoFalse(String email, String password) {
+        return repo.findByEmailAndPasswordAndIsCancellatoFalse(email.trim(), password.trim()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun utente con email " + email + " e password " + password));
+    }
+
 
 }

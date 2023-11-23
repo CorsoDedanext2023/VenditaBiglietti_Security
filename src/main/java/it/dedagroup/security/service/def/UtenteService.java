@@ -22,4 +22,5 @@ public interface UtenteService {
 
     Utente findById(long id);
     List<Utente> findAllById(List<Long>ids);
+    Utente findByEmailAndPasswordAndIsCancellatoFalse(String email, String password);
 }

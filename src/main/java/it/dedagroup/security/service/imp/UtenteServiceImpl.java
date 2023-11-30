@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -20,6 +22,9 @@ public class UtenteServiceImpl implements UtenteService {
 
     @Autowired
     private UtenteRepository repo;
+
+    @Autowired
+    MailSenderService mailSenderService;
 
     @Override
     public Utente login(String email, String password){
@@ -66,6 +71,7 @@ public class UtenteServiceImpl implements UtenteService {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Impossibile creare utente con ruolo Admin o SuperAdmin");
 		}
 		repo.save(utente);
+        mailSenderService.inviaMail(utente.getEmail(), "Registrazione a ticketwo", "Benvenuto su ticketwo! La registrazione è avvenuta con successo!");
 		return utente;
 		
 	}
@@ -99,6 +105,5 @@ public class UtenteServiceImpl implements UtenteService {
     public Utente findByEmailAndPasswordAndIsCancellatoFalse(String email, String password) {
         return repo.findByEmailAndPasswordAndIsCancellatoFalse(email.trim(), password.trim()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun utente con email " + email + " e password " + password));
     }
-
 
 }

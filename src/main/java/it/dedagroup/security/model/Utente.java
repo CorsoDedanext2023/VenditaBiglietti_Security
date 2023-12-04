@@ -1,6 +1,8 @@
 package it.dedagroup.security.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -9,32 +11,31 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@RequiredArgsConstructor
 public class Utente {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY )
 	private long id;
 	@Column(nullable = false)
-	@NonNull
+	@NotBlank
 	private String nome;
 	@Column(nullable = false)
-	@NonNull
+	@NotBlank
 	private String cognome;
 	@Column(nullable = false)
-	@NonNull
+	@NotNull
 	private LocalDate dataDiNascita;
 	@Column(nullable = false)
 	@NonNull
 	private Ruolo ruolo;
 	@Column(nullable = false , unique = true)
-	@NonNull
+	@NotBlank
 	private String email;
 	@Column(nullable = false)
-	@NonNull
+	@NotBlank
 	private String password;
 	@Column(nullable = false, unique = true)
-	@NonNull
+	@NotBlank
 	private String telefono;
 	@Column(nullable = false)
 	private boolean isCancellato;

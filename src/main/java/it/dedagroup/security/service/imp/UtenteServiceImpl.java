@@ -2,12 +2,9 @@ package it.dedagroup.security.service.imp;
 
 import java.time.LocalDate;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -47,8 +44,14 @@ public class UtenteServiceImpl implements UtenteService {
     }
 
     @Override
-    public Utente findByNomeAndCognome(String nome, String cognome) {
-        return repo.findByNomeAndCognomeAndIsCancellatoFalse(nome.trim(), cognome.trim()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public List<Utente> findByNomeAndCognome(String nome, String cognome) {
+        String nomeCap = nome.substring(0, 1).toUpperCase() + nome.substring(1).toLowerCase();
+        String cognomeCap = nome.substring(0, 1).toUpperCase() + cognome.substring(1).toLowerCase();
+        List<Utente> utenti = repo.findByNomeAndCognomeAndIsCancellatoFalse(nomeCap.trim(), cognomeCap.trim());
+        if(utenti.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun utente con questo nome e questo cognome.");
+        }
+        return utenti;
     }
 
     @Override
@@ -58,42 +61,68 @@ public class UtenteServiceImpl implements UtenteService {
 
     @Override
 	@Transactional(rollbackOn = DataAccessException.class)
-	public Utente aggiungiUtente(Utente utente){
-		Utente utenteByEmail = repo.findByEmailAndIsCancellatoFalse(utente.getEmail()).orElse(null);
+	public Utente aggiungiUtente(Utente u){
+		Utente utenteByEmail = repo.findByEmailAndIsCancellatoFalse(u.getEmail()).orElse(null);
 		if(utenteByEmail != null){
-	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Utente con questa email già esistente");
+	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Utente con questa email già esistente.");
 		}
-		Utente utenteByTelefono = repo.findByTelefonoAndIsCancellatoFalse(utente.getTelefono()).orElse(null);
+		Utente utenteByTelefono = repo.findByTelefonoAndIsCancellatoFalse(u.getTelefono()).orElse(null);
 		if(utenteByTelefono != null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Utente con questo numero di telefono già esistente");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Utente con questo numero di telefono già esistente.");
 		}
-		if(utente.getRuolo()== Ruolo.ADMIN || utente.getRuolo()== Ruolo.SUPER_ADMIN) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Impossibile creare utente con ruolo Admin o SuperAdmin");
+		if(u.getRuolo()== Ruolo.SUPER_ADMIN) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Impossibile creare utente con ruolo SuperAdmin.");
 		}
-		repo.save(utente);
-        mailSenderService.inviaMail(utente.getEmail(), "Registrazione a ticketwo", "Benvenuto su ticketwo! La registrazione è avvenuta con successo!");
-		return utente;
+        String nomeCap = u.getNome().substring(0, 1).toUpperCase() + u.getNome().substring(1).toLowerCase();
+        String cognomeCap = u.getCognome().substring(0, 1).toUpperCase() + u.getCognome().substring(1).toLowerCase();
+        u.setNome(nomeCap);
+        u.setCognome(cognomeCap);
+		repo.save(u);
+        //potrebbe dare errore perchè outlook potrebbe bloccare l'email settata nel properties come server di invio
+        mailSenderService.inviaMail(u.getEmail(), "Registrazione a ticketwo", "Benvenuto su ticketwo! La registrazione è avvenuta con successo!");
+		return u;
 		
 	}
 
     @Override
     @Transactional(rollbackOn = DataAccessException.class)
-    public Utente modificaUtente(Utente utente) {
-        return repo.save(utente);
+    public Utente modificaUtente(Utente u, long idUtente) {
+        Utente utenteDaModificare = repo.findByIdAndIsCancellatoFalse(idUtente).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun utente con questo id."));
+        Utente utenteByEmail = repo.findByEmailAndIsCancellatoFalse(u.getEmail()).orElse(null);
+        if(utenteByEmail != null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Utente con questa email già esistente");
+        }
+        Utente utenteByTelefono = repo.findByTelefonoAndIsCancellatoFalse(u.getTelefono()).orElse(null);
+        if(utenteByTelefono != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Utente con questo numero di telefono già esistente");
+        }
+        if(u.getRuolo()== Ruolo.SUPER_ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Impossibile settare utente con ruolo SuperAdmin");
+        }
+        String nomeCap = u.getNome().substring(0, 1).toUpperCase() + u.getNome().substring(1).toLowerCase();
+        String cognomeCap = u.getCognome().substring(0, 1).toUpperCase() + u.getCognome().substring(1).toLowerCase();
+        utenteDaModificare.setNome(nomeCap);
+        utenteDaModificare.setCognome(cognomeCap);
+        utenteDaModificare.setEmail(u.getEmail());
+        utenteDaModificare.setPassword(u.getPassword());
+        utenteDaModificare.setTelefono(u.getTelefono());
+        return repo.save(utenteDaModificare);
     }
 
     @Override
     @Transactional(rollbackOn = DataAccessException.class)
     public Utente eliminaUtente(long id) {
-        Utente u = repo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente con id "+ id + " non trovato"));
-        if(u.isCancellato()) throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Utente già cancellato.");
+        Utente u = repo.findByIdAndIsCancellatoFalse(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente con id "+ id + " non trovato"));
+        if(u.getRuolo().equals(Ruolo.SUPER_ADMIN)){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Non puoi disattivare un super admin.");
+        }
         u.setCancellato(true);
         return repo.save(u);
     }
 
     @Override
-    public Utente findById(long id) {
-        return repo.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun utente con id " + id));
+    public Utente findByIdAndIsCancellatoFalse(long id) {
+        return repo.findByIdAndIsCancellatoFalse(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun utente con id " + id));
     }
 
     @Override

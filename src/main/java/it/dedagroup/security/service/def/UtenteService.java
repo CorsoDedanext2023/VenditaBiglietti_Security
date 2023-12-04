@@ -14,13 +14,13 @@ public interface UtenteService {
     Utente findByEmail(String email);
     Utente findByTelefono(String telefono);
     Utente findByDataDiNascita(LocalDate dataDiNascita);
-    Utente findByNomeAndCognome(String nome, String cognome);
+    List<Utente> findByNomeAndCognome(String nome, String cognome);
     Utente findByRuolo(Ruolo ruolo);
     Utente aggiungiUtente(Utente utente);
-    Utente modificaUtente(Utente utente);
+    Utente modificaUtente(Utente utente, long idUtente);
     Utente eliminaUtente(long id);
 
-    Utente findById(long id);
+    Utente findByIdAndIsCancellatoFalse(long id);
     List<Utente> findAllById(List<Long>ids);
     Utente findByEmailAndPasswordAndIsCancellatoFalse(String email, String password);
 }
